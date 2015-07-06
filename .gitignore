@@ -2,3 +2,9 @@ Binaries/
 DerivedDataCache/
 Intermediate/
 Saved/
+*.opensdf
+*.sdf
+*.pch
+*.obj
+*.dll
+*.sln
