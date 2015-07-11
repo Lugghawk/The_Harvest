@@ -11,10 +11,13 @@ DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 //////////////////////////////////////////////////////////////////////////
 // AThe_HarvestCharacter
 
-AThe_HarvestCharacter::AThe_HarvestCharacter()
+AThe_HarvestCharacter::AThe_HarvestCharacter(const class FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer.SetDefaultSubobjectClass<UDroneMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+
+	GetCapsuleComponent()->SetEnableGravity(false);
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -44,14 +47,15 @@ void AThe_HarvestCharacter::SetupPlayerInputComponent(class UInputComponent* Inp
 	// set up gameplay key bindings
 	check(InputComponent);
 
-	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	InputComponent->BindAction("Ascend", IE_Pressed, this, &AThe_HarvestCharacter::Ascend);
+	InputComponent->BindAction("Ascend", IE_Released, this, &AThe_HarvestCharacter::StopAscending);
+
+	InputComponent->BindAction("Descend", IE_Pressed, this, &AThe_HarvestCharacter::Descend);
+	InputComponent->BindAction("Descend", IE_Released, this, &AThe_HarvestCharacter::StopDescending);
+
+
 	
-	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AThe_HarvestCharacter::TouchStarted);
-	if( EnableTouchscreenMovement(InputComponent) == false )
-	{
-		InputComponent->BindAction("Fire", IE_Pressed, this, &AThe_HarvestCharacter::OnFire);
-	}
+	InputComponent->BindAction("Fire", IE_Pressed, this, &AThe_HarvestCharacter::OnFire);
 	
 	InputComponent->BindAxis("MoveForward", this, &AThe_HarvestCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AThe_HarvestCharacter::MoveRight);
@@ -63,6 +67,30 @@ void AThe_HarvestCharacter::SetupPlayerInputComponent(class UInputComponent* Inp
 	InputComponent->BindAxis("TurnRate", this, &AThe_HarvestCharacter::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &AThe_HarvestCharacter::LookUpAtRate);
+}
+
+void AThe_HarvestCharacter::Tick(float DeltaTime){
+
+}
+
+void AThe_HarvestCharacter::Ascend(){
+	UE_LOG(LogTemp, Warning, TEXT("Char Ascend"));
+	GetDroneMovementComponent()->Ascend();
+}
+
+void AThe_HarvestCharacter::StopAscending(){
+	UE_LOG(LogTemp, Warning, TEXT("Char Stop Ascend"));
+	GetDroneMovementComponent()->StopAscending();
+}
+
+void AThe_HarvestCharacter::Descend(){
+	UE_LOG(LogTemp, Warning, TEXT("Char Descend"));
+	GetDroneMovementComponent()->Descend();
+}
+
+void AThe_HarvestCharacter::StopDescending(){
+	UE_LOG(LogTemp, Warning, TEXT("Char Stop Descend"));
+	GetDroneMovementComponent()->StopDescending();
 }
 
 void AThe_HarvestCharacter::OnFire()
@@ -90,64 +118,8 @@ void AThe_HarvestCharacter::OnFire()
 
 }
 
-void AThe_HarvestCharacter::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	if( TouchItem.bIsPressed == true )
-	{
-		return;
-	}
-	TouchItem.bIsPressed = true;
-	TouchItem.FingerIndex = FingerIndex;
-	TouchItem.Location = Location;
-	TouchItem.bMoved = false;
-}
-
-void AThe_HarvestCharacter::EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	if (TouchItem.bIsPressed == false)
-	{
-		return;
-	}
-	if( ( FingerIndex == TouchItem.FingerIndex ) && (TouchItem.bMoved == false) )
-	{
-		OnFire();
-	}
-	TouchItem.bIsPressed = false;
-}
-
-void AThe_HarvestCharacter::TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	if ((TouchItem.bIsPressed == true) && ( TouchItem.FingerIndex==FingerIndex))
-	{
-		if (TouchItem.bIsPressed)
-		{
-			if (GetWorld() != nullptr)
-			{
-				UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport();
-				if (ViewportClient != nullptr)
-				{
-					FVector MoveDelta = Location - TouchItem.Location;
-					FVector2D ScreenSize;
-					ViewportClient->GetViewportSize(ScreenSize);
-					FVector2D ScaledDelta = FVector2D( MoveDelta.X, MoveDelta.Y) / ScreenSize;									
-					if (ScaledDelta.X != 0.0f)
-					{
-						TouchItem.bMoved = true;
-						float Value = ScaledDelta.X * BaseTurnRate;
-						AddControllerYawInput(Value);
-					}
-					if (ScaledDelta.Y != 0.0f)
-					{
-						TouchItem.bMoved = true;
-						float Value = ScaledDelta.Y* BaseTurnRate;
-						AddControllerPitchInput(Value);
-					}
-					TouchItem.Location = Location;
-				}
-				TouchItem.Location = Location;
-			}
-		}
-	}
+UDroneMovementComponent* AThe_HarvestCharacter::GetDroneMovementComponent(){
+	return Cast<UDroneMovementComponent>(GetCharacterMovement());
 }
 
 void AThe_HarvestCharacter::MoveForward(float Value)
@@ -180,15 +152,3 @@ void AThe_HarvestCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-bool AThe_HarvestCharacter::EnableTouchscreenMovement(class UInputComponent* InputComponent)
-{
-	bool bResult = false;
-	if(FPlatformMisc::GetUseVirtualJoysticks() || GetDefault<UInputSettings>()->bUseMouseForTouch )
-	{
-		bResult = true;
-		InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AThe_HarvestCharacter::BeginTouch);
-		InputComponent->BindTouch(EInputEvent::IE_Released, this, &AThe_HarvestCharacter::EndTouch);
-		InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AThe_HarvestCharacter::TouchUpdate);
-	}
-	return bResult;
-}
