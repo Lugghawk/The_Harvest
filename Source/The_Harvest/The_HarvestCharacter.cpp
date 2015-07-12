@@ -75,23 +75,63 @@ void AThe_HarvestCharacter::Tick(float DeltaTime){
 
 void AThe_HarvestCharacter::Ascend(){
 	UE_LOG(LogTemp, Warning, TEXT("Char Ascend"));
-	GetDroneMovementComponent()->Ascend();
+	//GetDroneMovementComponent()->Ascend();
+	SetAscending(true);
 }
 
 void AThe_HarvestCharacter::StopAscending(){
 	UE_LOG(LogTemp, Warning, TEXT("Char Stop Ascend"));
-	GetDroneMovementComponent()->StopAscending();
+//	GetDroneMovementComponent()->StopAscending();
+	SetAscending(false);
 }
 
 void AThe_HarvestCharacter::Descend(){
 	UE_LOG(LogTemp, Warning, TEXT("Char Descend"));
-	GetDroneMovementComponent()->Descend();
+	//GetDroneMovementComponent()->Descend();
+	SetDescending(true);
 }
 
 void AThe_HarvestCharacter::StopDescending(){
 	UE_LOG(LogTemp, Warning, TEXT("Char Stop Descend"));
-	GetDroneMovementComponent()->StopDescending();
+	//GetDroneMovementComponent()->StopDescending();
+	SetDescending(false);
 }
+
+void AThe_HarvestCharacter::SetAscending(bool ascending){
+	if (ascending){
+		GetDroneMovementComponent()->Ascend();
+	}
+	else{
+		GetDroneMovementComponent()->StopAscending();
+	}
+	if (Role < ROLE_Authority){
+		ServerSetAscending(ascending);
+	}
+}
+
+void AThe_HarvestCharacter::ServerSetAscending_Implementation(bool ascending){
+	SetAscending(ascending);
+}
+
+bool AThe_HarvestCharacter::ServerSetAscending_Validate(bool ascending) { return true; }
+
+void AThe_HarvestCharacter::SetDescending(bool descending){
+	if (descending){
+		GetDroneMovementComponent()->Descend();
+	}
+	else{
+		GetDroneMovementComponent()->StopDescending();
+	}
+	if (Role < ROLE_Authority){
+		ServerSetDescending(descending);
+	}
+}
+
+void AThe_HarvestCharacter::ServerSetDescending_Implementation(bool descending){
+	SetDescending(descending);
+}
+
+bool AThe_HarvestCharacter::ServerSetDescending_Validate(bool descending){ return true; }
 
 void AThe_HarvestCharacter::OnFire()
 { 

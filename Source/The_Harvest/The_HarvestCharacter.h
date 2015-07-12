@@ -68,10 +68,21 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+
 	void Ascend();
 	void StopAscending();
+	void SetAscending(bool ascending);
+	UFUNCTION(reliable, server, WithValidation)
+	void ServerSetAscending(bool ascending);
+	bool ServerSetAscending_Validate(bool ascending);
+	void ServerSetAscending_Implementation(bool ascending);
 	void Descend();
 	void StopDescending();
+	void SetDescending(bool descending);
+	UFUNCTION(reliable, server, WithValidation)
+	void ServerSetDescending(bool descending);
+	bool ServerSetDescending_Validate(bool descending);
+	void ServerSetDescending_Implementation(bool descending);
 
 protected:
 	// APawn interface
