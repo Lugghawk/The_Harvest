@@ -17,10 +17,7 @@ public:
 	UDroneMovementComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Drone)
-	float verticalMaxVelocity = 1000.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Drone)
-	float verticalAcceleration = 10.f;
+	float verticalMaxVelocity = 600.f;
 
 	void Ascend();
 
@@ -31,6 +28,8 @@ public:
 	void StopDescending();
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+
+	void BeginPlay() override;
 
 private:
 	bool bIsAscending = false;
