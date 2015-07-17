@@ -1,0 +1,3 @@
+name,resourceName,isEnergy
+SOLAR_ENERGY,Solar Energy,TRUE
+COPPER,Copper,FALSE
