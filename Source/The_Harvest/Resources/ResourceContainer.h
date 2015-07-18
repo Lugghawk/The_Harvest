@@ -9,8 +9,8 @@
 /**
  * 
  */
-UCLASS(Blueprintable)
-class THE_HARVEST_API UResourceContainer : public UObject
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class THE_HARVEST_API UResourceContainer : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -18,6 +18,11 @@ protected:
 	FResourcePile* FindResourcePile(FName name);
 
 public:
+
+	UResourceContainer();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool accessibleFromOutside;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FResourcePile> resources;
@@ -27,4 +32,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Resources)
 	int32 GetTotalResourceAmount();
+
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 };

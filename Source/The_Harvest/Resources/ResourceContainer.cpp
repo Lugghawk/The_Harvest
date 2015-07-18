@@ -5,7 +5,12 @@
 
 
 
-
+UResourceContainer::UResourceContainer(){
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	bWantsBeginPlay = true;
+	PrimaryComponentTick.bCanEverTick = true;
+}
 
 void UResourceContainer::AddResource(FResourcePile resourcePile){
 	FResourcePile* pile = FindResourcePile(resourcePile.resourceName);
@@ -37,3 +42,22 @@ int32 UResourceContainer::GetTotalResourceAmount(){
 	}
 	return amount;
 }
+
+// Called when the game starts
+void UResourceContainer::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+
+}
+
+
+// Called every frame
+void UResourceContainer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
