@@ -24,14 +24,11 @@ public:
 
 	UResourceContainer();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool accessibleFromOutside;
 
-	
 	UFUNCTION(BlueprintCallable, Category = Resources)
 	TArray<FResourcePile> GetResources();
 
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Resources)
 	int32 Capacity;
 
 	/* True if the resource was added, false if the capacity would have been exceeded. */
