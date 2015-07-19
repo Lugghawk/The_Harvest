@@ -17,18 +17,26 @@ class THE_HARVEST_API UResourceContainer : public UActorComponent
 protected:
 	FResourcePile* FindResourcePile(FName name);
 
+	TArray<FResourcePile> resources;
+
 public:
+
 
 	UResourceContainer();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool accessibleFromOutside;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FResourcePile> resources;
-
+	
 	UFUNCTION(BlueprintCallable, Category = Resources)
-	void AddResource(FResourcePile resourcePile);
+	TArray<FResourcePile> GetResources();
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	int32 Capacity;
+
+	/* True if the resource was added, false if the capacity would have been exceeded. */
+	UFUNCTION(BlueprintCallable, Category = Resources)
+	bool AddResource(FResourcePile resourcePile);
 
 	UFUNCTION(BlueprintCallable, Category = Resources)
 	int32 GetTotalResourceAmount();
@@ -38,5 +46,7 @@ public:
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+
 
 };

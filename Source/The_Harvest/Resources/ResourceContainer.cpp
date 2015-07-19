@@ -9,10 +9,13 @@ UResourceContainer::UResourceContainer(){
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	bWantsBeginPlay = true;
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;//Invetories don't need to tick.. right?
 }
 
-void UResourceContainer::AddResource(FResourcePile resourcePile){
+bool UResourceContainer::AddResource(FResourcePile resourcePile){
+	if ((GetTotalResourceAmount() + resourcePile.amount) > Capacity){
+		return false;
+	}
 	FResourcePile* pile = FindResourcePile(resourcePile.resourceName);
 	if ( pile != nullptr){
 		//Resource exists in our pile already, just add to it.
@@ -23,6 +26,7 @@ void UResourceContainer::AddResource(FResourcePile resourcePile){
 	{
 		resources.Add(resourcePile);
 	}
+	return true;
 }
 
 
@@ -43,6 +47,10 @@ int32 UResourceContainer::GetTotalResourceAmount(){
 	return amount;
 }
 
+TArray<FResourcePile> UResourceContainer::GetResources(){
+	return resources;
+}
+
 // Called when the game starts
 void UResourceContainer::BeginPlay()
 {
@@ -53,7 +61,8 @@ void UResourceContainer::BeginPlay()
 }
 
 
-// Called every frame
+// Won't be called right now
+// See PrimaryComponentTick.bCanEverTick in constructor.
 void UResourceContainer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
