@@ -16,6 +16,9 @@ class THE_HARVEST_API AEnergyGenerator : public ABuilding
 
 public:
 	AEnergyGenerator();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+	float energyProvided = 0.f;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Power")
     float powerRadius;
