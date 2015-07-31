@@ -16,6 +16,9 @@ class THE_HARVEST_API APowerableBuilding : public ABuilding
 public:	
     APowerableBuilding();
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UTextRenderComponent* poweredText;
+
     /** adds a power source from the building */
     UFUNCTION(BlueprintCallable, Category="Power")
     void Power();
